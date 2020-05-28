@@ -21,7 +21,7 @@ const SearchBar = props => {
 
   useEffect(() => {
     props.callBackSearchResult(itemsFound);
-    console.log(itemsFound);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemsFound, input]);
 
   const getItems = () => {

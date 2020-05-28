@@ -1,55 +1,87 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
-  Alert,
   View,
   TouchableOpacity,
   Image,
   Text,
   SafeAreaView,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import {styles} from './style';
 import {db} from '../../configuration/firebase';
 import {textView} from '../../ui/textView';
-import LoadingDialog from '../../ui/LoadingDialog';
 import SearchBar from './SearchItems/index';
+import DetailItem from './DetailItems/index';
+import * as string from '../../utils/string';
 const index = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
+  const [limit, setLimit] = useState(string.INITIALIZED_ITEMS);
+  const [visible, setVisible] = useState(false);
+  const [detailItem, setDetailItem] = useState({});
 
   useEffect(() => {
-    getItems();
-  }, []);
+    setLoading(true);
+    getItemsAndCheckLimit();
+  }, [getItemsAndCheckLimit, limit]);
 
-  const getItems = () => {
-    db.ref('/items').on('value', querySnapShot => {
-      let data = querySnapShot.val() ? querySnapShot.val() : {};
-      setItems(data);
-    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const getItemsAndCheckLimit = () => {
+    console.log(limit);
+    db.ref('/items')
+      .orderByChild('id')
+      .limitToFirst(limit)
+      .on('value', querySnapShot => {
+        let data = querySnapShot.val() ? querySnapShot.val() : {};
+        setItems(data);
+        checkMaxLimit(data);
+        setLoading(false);
+      });
+  };
+
+  const checkMaxLimit = data => {
+    if (limit > data.length) {
+      setLimit(data.length);
+    }
   };
 
   const getSearchItemResult = searchItems => {
     setSearchResult(searchItems);
   };
 
-  function usePrevious(value) {
-    const ref = useRef();
-    useEffect(() => {
-      ref.prevLateVal = value;
-    });
-    return ref.prevLateVal;
-  }
+  const retrivedMore = () => {
+    setLimit(limit + string.LOAD_MORE_ITEMS);
+  };
 
-  const prevLateVal = usePrevious(searchResult);
-  const renderStoreItems = ({item}) => {
+  const renderFooter = () => {
+    try {
+      if (loading) {
+        return <ActivityIndicator animating={loading} />;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const openModal = item => {
+    setVisible(true);
+    setDetailItem(item);
+  };
+  const dissmissModal = () => {
+    setVisible(false);
+  };
+  const renderItems = ({item}) => {
     return (
       <TouchableOpacity
         style={styles.storeItem}
-        // onPress={() => onPressStoreItems(item)}
-      >
+        onPress={() => openModal(item)}>
         <View style={styles.columnFlex}>
+          <Text style={textView.txtinfoSecond}>Mã hàng: {item.id}</Text>
           <Text style={textView.txtinfoSecond}>Tên hàng: {item.name}</Text>
           <Text style={textView.txtinfoSecond}>Loại: {item.type}</Text>
           <Text style={textView.txtinfoSecond}>Số lượng: {item.amount}</Text>
@@ -73,6 +105,11 @@ const index = () => {
     <SafeAreaView>
       <SearchBar callBackSearchResult={getSearchItemResult} />
       <View>
+        <DetailItem
+          isVisible={visible}
+          item={detailItem}
+          dissmiss={dissmissModal}
+        />
         <FlatList
           data={
             !(searchResult === undefined || searchResult.length === 0)
@@ -81,11 +118,12 @@ const index = () => {
           }
           keyboardShouldPersistTaps="handled"
           //renderItem={renderInventory}
-          renderItem={renderStoreItems}
+          renderItem={renderItems}
+          onScrollEndDrag={retrivedMore}
+          ListFooterComponent={renderFooter}
           keyExtractor={(item, index) => index.toString()}
         />
       </View>
-      <LoadingDialog loading={loading} />
     </SafeAreaView>
   );
 };
