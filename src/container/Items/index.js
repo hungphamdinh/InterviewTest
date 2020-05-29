@@ -14,7 +14,7 @@ import {styles} from './style';
 import {textView} from '../../ui/textView';
 import SearchBar from './SearchItems/index';
 import DetailItem from './DetailItems/index';
-import * as string from '../../utils/string';
+import * as string from '../../resources/string';
 import ItemsType from './itemsType/index';
 import * as firebaseService from '../../service/firebaseAPI';
 const index = () => {

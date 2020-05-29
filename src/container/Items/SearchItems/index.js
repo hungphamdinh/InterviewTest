@@ -10,7 +10,7 @@ import {
   Picker,
 } from 'react-native';
 import {styles} from './style';
-import * as string from '../../../utils/string';
+import * as string from '../../../resources/string';
 import * as firebaseService from '../../../service/firebaseAPI';
 const SearchBar = props => {
   const [input, setInput] = useState('');
