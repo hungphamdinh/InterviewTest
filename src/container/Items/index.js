@@ -18,6 +18,7 @@ import * as string from '../../utils/string';
 import ItemsType from './itemsType/index';
 import * as firebaseService from '../../service/firebaseAPI';
 const index = () => {
+  const [inputSearch, setInputSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
@@ -56,14 +57,15 @@ const index = () => {
     }
   };
 
-  const getSearchItemResult = searchItems => {
+  const getSearchItemResult = (searchItems, textInput) => {
     setSearchResult(searchItems);
+    setInputSearch(textInput);
   };
   console.disableYellowBox = true;
   const retrivedMore = () => {
     setLimit(limit + string.LOAD_MORE_ITEMS);
   };
-
+  console.log(inputSearch)
   const openModal = item => {
     setVisible(true);
     setDetailItem(item);
@@ -114,7 +116,7 @@ const index = () => {
           data={
             !(searchResult === undefined || searchResult.length === 0)
               ? searchResult
-              : items
+              : inputSearch !== '' ? [] : items
           }
           keyboardShouldPersistTaps="handled"
           renderItem={renderItems}
