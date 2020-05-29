@@ -8,8 +8,9 @@ export const styles = StyleSheet.create({
     backgroundColor: 'gray',
   },
   picker: {
+    marginLeft: 10,
     height: 50,
-    width: '60%',
+    width: 120,
     fontSize: 20,
     marginVertical: 10,
     alignItems: 'center',
