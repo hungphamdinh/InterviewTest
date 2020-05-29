@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
   },
 
   searchArea: {
-    flex: 0.9,
+    flex: 0.8,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
     marginLeft: 8,
   },
   btnDelete: {
-    flex: 0.1,
+    flex: 0.2,
     alignItems: 'center',
     justifyContent: 'center',
   },

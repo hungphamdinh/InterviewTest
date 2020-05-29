@@ -15,6 +15,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'column',
     flex: 0.5,
   },
+  itemList: {
+    marginBottom: 350,
+  },
   imageNewFeed: {
     width: 150,
     height: 150,

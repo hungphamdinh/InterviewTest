@@ -1,24 +1,47 @@
 import React from 'react';
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+} from 'react-native';
 import {textView} from '../../../ui/textView';
 import {buttonStyle} from '../../../ui/button';
 const DetailItems = props => {
-  const {id, name, amount, type} = props.item;
+  const {id, name, amount, type, imageUri} = props.item;
   const setVisible = () => {
     props.dissmiss();
   };
   return (
-    <View style={styles.centeredView}>
+    <View>
       <Modal
         transparent={true}
         visible={props.isVisible}
         onRequestClose={setVisible}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={textView.txtinfoSecond}>Mã hàng: {id}</Text>
-            <Text style={textView.txtinfoSecond}>Tên: {name}</Text>
-            <Text style={textView.txtinfoSecond}>Số lượng: {amount}</Text>
-            <Text style={textView.txtinfoSecond}>Loại: {type}</Text>
+            <View style={styles.row}>
+              <View style={styles.halfColumn}>
+                <Image
+                  style={styles.imageNewFeed}
+                  source={
+                    imageUri !== ''
+                      ? {uri: imageUri}
+                      : require('../../../resources/assets/chooseimage.jpg')
+                  }
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.halfColumn}>
+                <Text style={textView.txtinfoSecond}>Mã hàng: {id}</Text>
+                <Text style={textView.txtinfoSecond}>Tên: {name}</Text>
+                <Text style={textView.txtinfoSecond}>Số lượng: {amount}</Text>
+                <Text style={textView.txtinfoSecond}>Loại: {type}</Text>
+              </View>
+            </View>
+
             <TouchableOpacity
               style={buttonStyle.btnAccept}
               onPress={setVisible}>
@@ -40,12 +63,16 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
   },
+  halfColumn: {
+    flexDirection: 'column',
+    flex: 0.5,
+  },
   modalView: {
+    padding: 10,
     margin: 20,
     width: '90%',
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -55,6 +82,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  imageNewFeed: {
+    width: 150,
+    height: 150,
+    marginTop: 15,
   },
   textStyle: {
     color: 'white',

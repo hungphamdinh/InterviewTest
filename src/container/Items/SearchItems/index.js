@@ -7,28 +7,35 @@ import {
   SafeAreaView,
   TextInput,
   Platform,
+  Picker,
 } from 'react-native';
 import {styles} from './style';
-import {db} from '../../../configuration/firebase';
-import LoadingDialog from '../../../ui/LoadingDialog';
+import * as string from '../../../utils/string';
+import * as firebaseService from '../../../service/firebaseAPI';
 const SearchBar = props => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
-  useEffect(() => {
-    getItems();
-  }, []);
+  const [selectedValue, setSelectedValue] = useState(string.NAME);
 
   useEffect(() => {
     props.callBackSearchResult(itemsFound);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemsFound, input]);
 
-  const getItems = () => {
-    db.ref('/items').on('value', querySnapShot => {
-      let data = querySnapShot.val() ? querySnapShot.val() : {};
+  useEffect(() => {
+    setLoading(true);
+    getItemsByType();
+  }, [getItemsByType, props.typeName]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const getItemsByType = async () => {
+    if (props.typeName !== '') {
+      const data = await firebaseService.getItemToSearchByTypes(props.typeName);
       setItems(data);
-    });
+    } else {
+      const data = await firebaseService.getItemToSearch();
+      setItems(data);
+    }
   };
 
   const onSearchStoreItems = textInput => {
@@ -44,7 +51,13 @@ const SearchBar = props => {
   };
 
   var itemsFound =
-    itemFound.length === 1 && comp(input, itemFound[0].name) ? [] : itemFound;
+    itemFound.length === 1 &&
+    comp(
+      input,
+      selectedValue === string.NAME ? itemFound[0].name : itemFound[0].id,
+    )
+      ? []
+      : itemFound;
 
   function escapeRegExp(str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
@@ -57,7 +70,10 @@ const SearchBar = props => {
       }
       var regEscape = escapeRegExp(queryItem);
       const regex = new RegExp(`${regEscape.trim()}`, 'i');
-      return itemList.filter(item => item.name.search(regex) >= 0);
+      if (selectedValue === string.NAME) {
+        return itemList.filter(item => item.name.search(regex) >= 0);
+      }
+      return itemList.filter(item => item.id.search(regex) >= 0);
     }
   }
 
@@ -86,7 +102,7 @@ const SearchBar = props => {
                 />
                 <TextInput
                   style={{fontWeight: 'bold', color: 'black'}}
-                  placeholder={'Tìm tên hàng'}
+                  placeholder={'Tìm theo ' + selectedValue}
                   placeholderTextColor="gray"
                   onChangeText={onSearchStoreItems}
                   value={input}
@@ -94,15 +110,17 @@ const SearchBar = props => {
               </View>
 
               <View style={styles.btnDelete}>
-                <TouchableOpacity>
-                  <Image
-                    source={require('../../../resources/assets/icondelete.png')}
-                    style={styles.imageNewFeed}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
+                <Picker
+                  selectedValue={selectedValue}
+                  style={{height: 50, width: 50}}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setSelectedValue(itemValue)
+                  }>
+                  <Picker.Item label="Tên" value={string.NAME} />
+                  <Picker.Item label="Mã" value={string.ID} />
+                </Picker>
               </View>
-              <LoadingDialog loading={loading} />
+              {/* <LoadingDialog loading={loading} /> */}
             </View>
           </View>
         </View>
