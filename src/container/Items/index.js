@@ -30,7 +30,6 @@ const index = () => {
   useEffect(() => {
     setLoading(true);
     getItemsByType();
-    console.log(limit)
   }, [getItemsByType, limit, typeName]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,7 +64,7 @@ const index = () => {
   const retrivedMore = () => {
     setLimit(limit + string.LOAD_MORE_ITEMS);
   };
-  console.log(inputSearch)
+
   const openModal = item => {
     setVisible(true);
     setDetailItem(item);
