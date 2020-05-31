@@ -50,6 +50,7 @@ const index = () => {
   const getTypeValue = value => {
     setTypeName(value);
   };
+
   const checkMaxLimit = data => {
     if (limit > data.length) {
       setLimit(data.length);
@@ -60,6 +61,7 @@ const index = () => {
     setSearchResult(searchItems);
     setInputSearch(textInput);
   };
+
   console.disableYellowBox = true;
   const retrivedMore = () => {
     setLimit(limit + string.LOAD_MORE_ITEMS);
@@ -69,9 +71,11 @@ const index = () => {
     setVisible(true);
     setDetailItem(item);
   };
+
   const dissmissModal = () => {
     setVisible(false);
   };
+
   const renderItems = ({item}) => {
     return (
       <TouchableOpacity

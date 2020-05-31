@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   imageNewFeed: {
-    width: 150,
+    width: 130,
     height: 150,
     marginTop: 15,
   },
